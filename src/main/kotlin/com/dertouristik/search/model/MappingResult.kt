@@ -5,7 +5,7 @@ sealed class MappingResult {
         val mapping: List<String>,
     ) : MappingResult()
 
-    data class Error<T : Throwable>(
+    data class Failure<T : Throwable>(
         val error: String,
         val metadata: Map<String, Any>? = null,
         val exception: T,

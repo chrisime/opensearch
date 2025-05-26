@@ -2,7 +2,7 @@ package com.dertouristik.search.model
 
 sealed class BulkResult<T> {
     data class Success<T>(
-        val batchSize: Int,
+        val numOfDocuments: Int,
         val results: List<SearchBulkResponseItem>
     ) : BulkResult<T>()
 

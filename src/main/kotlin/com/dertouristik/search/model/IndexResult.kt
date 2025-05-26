@@ -7,7 +7,7 @@ sealed class IndexResult {
         val shardsAcknowledged: Boolean,
     ) : IndexResult()
 
-    data class Error<T: Throwable>(
+    data class Failure<T: Throwable>(
         val error: String,
         val metadata: Map<String, Any>? = null,
         val exception: T,

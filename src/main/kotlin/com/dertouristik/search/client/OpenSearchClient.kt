@@ -53,23 +53,23 @@ class OpenSearchClient(config: OpenSearchConfig) {
             )
         }.getOrElse { e ->
             when (e) {
-                is ResponseException -> IndexResult.Error(
+                is ResponseException -> IndexResult.Failure(
                     error = e.response.toString(),
                     exception = e
                 )
 
-                is OpenSearchException -> IndexResult.Error(
+                is OpenSearchException -> IndexResult.Failure(
                     error = e.error().reason() ?: "OpenSearch error",
                     metadata = e.error().metadata(),
                     exception = e
                 )
 
-                is IOException -> IndexResult.Error(
+                is IOException -> IndexResult.Failure(
                     error = e.message ?: "IO error",
                     exception = e
                 )
 
-                else -> IndexResult.Error(
+                else -> IndexResult.Failure(
                     error = e.message ?: "Unknown error",
                     exception = e
                 )
@@ -78,7 +78,7 @@ class OpenSearchClient(config: OpenSearchConfig) {
     }
 
     fun <T> search(
-        indexName: String,
+        searchIndex: SearchIndex,
         size: Int = 1000,
         from: Int = 0,
         queryBuilder: (Query.Builder.() -> Unit)? = null,
@@ -89,7 +89,7 @@ class OpenSearchClient(config: OpenSearchConfig) {
         }
 
         val searchRequest = SearchRequest.Builder()
-            .index(indexName)
+            .index(searchIndex.indexName)
             .size(size)
             .from(from)
             .query(query)
@@ -107,11 +107,11 @@ class OpenSearchClient(config: OpenSearchConfig) {
     }
 
     inline fun <reified T> search(
-        indexName: String,
+        searchIndex: SearchIndex,
         size: Int = 1000,
         from: Int = 0,
         noinline queryBuilder: (Query.Builder.() -> Unit)? = null,
-    ): SearchResult<T> = search(indexName, size, from, queryBuilder, T::class.java)
+    ): SearchResult<T> = search(searchIndex, size, from, queryBuilder, T::class.java)
 
     fun <T> upsertWithResults(
         searchDocuments: List<SearchDocument<T>>,
@@ -123,7 +123,7 @@ class OpenSearchClient(config: OpenSearchConfig) {
             val results = operation(searchDocuments, searchIndex)
 
             BulkResult.Success<T>(
-                batchSize = searchDocuments.size,
+                numOfDocuments = searchDocuments.size,
                 results = results
             )
         }.getOrElse { e ->
@@ -206,11 +206,11 @@ class OpenSearchClient(config: OpenSearchConfig) {
     }
 
     fun countDocuments(
-        indexName: String,
+        searchIndex: SearchIndex,
         queryBuilder: (Query.Builder.() -> Unit)? = null
     ): Long {
         val countRequest = CountRequest.Builder()
-            .index(indexName)
+            .index(searchIndex.indexName)
             .apply {
                 queryBuilder?.let { builder ->
                     val query = Query.Builder().apply(builder).build()
@@ -236,18 +236,18 @@ class OpenSearchClient(config: OpenSearchConfig) {
             )
         }.getOrElse { e ->
             when (e) {
-                is OpenSearchException -> MappingResult.Error(
+                is OpenSearchException -> MappingResult.Failure(
                     error = e.error().reason() ?: "OpenSearch error",
                     metadata = e.error().metadata(),
                     exception = e
                 )
 
-                is IOException -> MappingResult.Error(
+                is IOException -> MappingResult.Failure(
                     error = e.message ?: "IO error",
                     exception = e
                 )
 
-                else -> MappingResult.Error(
+                else -> MappingResult.Failure(
                     error = e.message ?: "Unknown error",
                     exception = e as Exception
                 )
