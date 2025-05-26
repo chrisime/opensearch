@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.gradle.plugins.ide.idea.model.IdeaLanguageLevel
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
@@ -117,7 +118,20 @@ tasks {
     }
 
     test {
+        jvmArgs = listOf("-Xshare:off")
+
+        maxParallelForks = Runtime.getRuntime().availableProcessors()
+
         useJUnitPlatform()
+
+        testLogging {
+            events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+            displayGranularity = 2
+            showExceptions = true
+            showCauses = true
+            showStackTraces = true
+            showStandardStreams = false
+        }
     }
 }
 
