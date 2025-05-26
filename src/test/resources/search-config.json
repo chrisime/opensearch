@@ -1,0 +1,21 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1,
+    "refresh_interval": -1
+  },
+  "mappings": {
+    "dynamic": "false",
+    "properties": {
+      "uid": {
+        "type": "text"
+      },
+      "name": {
+        "type": "text"
+      },
+      "value": {
+        "type": "long"
+      }
+    }
+  }
+}
