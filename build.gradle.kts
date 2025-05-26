@@ -54,8 +54,8 @@ semver {
 
 tasks {
     java {
-        sourceCompatibility = JavaVersion.toVersion("21")
-        targetCompatibility = JavaVersion.toVersion("21")
+        sourceCompatibility = JavaVersion.toVersion("17")
+        targetCompatibility = JavaVersion.toVersion("17")
 
         withSourcesJar()
         withJavadocJar()
@@ -63,13 +63,13 @@ tasks {
 
     kotlin {
         jvmToolchain {
-            languageVersion = JavaLanguageVersion.of("21")
+            languageVersion = JavaLanguageVersion.of("17")
             implementation = JvmImplementation.VENDOR_SPECIFIC
             vendor = JvmVendorSpec.BELLSOFT
         }
 
         compilerOptions {
-            jvmTarget = JvmTarget.fromTarget("21")
+            jvmTarget = JvmTarget.fromTarget("17")
             apiVersion = KotlinVersion.KOTLIN_2_1
             languageVersion = KotlinVersion.KOTLIN_2_1
         }
@@ -77,9 +77,9 @@ tasks {
 
     idea {
         module {
-            languageLevel = IdeaLanguageLevel("21")
-            targetVersion = "21"
-            targetBytecodeVersion = JavaVersion.toVersion("21")
+            languageLevel = IdeaLanguageLevel("17")
+            targetVersion = "17"
+            targetBytecodeVersion = JavaVersion.toVersion("17")
 
             isDownloadJavadoc = true
             isDownloadSources = true
