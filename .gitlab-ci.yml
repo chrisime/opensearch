@@ -1,0 +1,45 @@
+stages:
+  - build-jar
+  - publish
+
+build:jar:
+  stage: build-jar
+  image: public.ecr.aws/docker/library/openjdk:21-alpine
+  script:
+    - ./gradlew --no-daemon --build-cache --gradle-user-home .gradle/ build -Pci=true
+  cache:
+    key: $CI_COMMIT_REF_NAME
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+  artifacts:
+    expire_in: 1 day
+    reports:
+      junit: build/test-results/test/TEST-*.xml
+    paths:
+      - build/libs/*.jar
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule"'
+      when: never
+    - when: on_success
+
+publish:
+  stage: publish
+  image: public.ecr.aws/docker/library/openjdk:21-alpine
+  script:
+    - ./gradlew --no-daemon --build-cache --gradle-user-home .gradle/ publish -Pci=true
+  cache:
+    key: $CI_COMMIT_REF_NAME
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH != "main"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE == "trigger" || $CI_PIPELINE_SOURCE == "schedule"'
+      when: never
+    - when: manual
