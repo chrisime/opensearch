@@ -24,7 +24,6 @@ import org.opensearch.client.opensearch.indices.CreateIndexRequest
 import org.opensearch.client.opensearch.indices.GetMappingRequest
 import java.io.IOException
 
-
 class OpenSearchClient(config: OpenSearchConfig) {
 
     private val openSearchClient: OpenSearchClient by lazy { OpenSearchClientFactory.createClient(config) }
