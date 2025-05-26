@@ -4,7 +4,7 @@ stages:
 
 build:jar:
   stage: build-jar
-  image: public.ecr.aws/docker/library/openjdk:21-alpine
+  image: public.ecr.aws/docker/library/openjdk:17-alpine
   script:
     - ./gradlew --no-daemon --build-cache --gradle-user-home .gradle/ build -Pci=true
   cache:
@@ -27,7 +27,7 @@ build:jar:
 
 publish:
   stage: publish
-  image: public.ecr.aws/docker/library/openjdk:21-alpine
+  image: public.ecr.aws/docker/library/openjdk:17-alpine
   script:
     - ./gradlew --no-daemon --build-cache --gradle-user-home .gradle/ publish -Pci=true
   cache:
