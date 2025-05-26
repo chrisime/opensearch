@@ -65,7 +65,6 @@ tasks {
         jvmToolchain {
             languageVersion = JavaLanguageVersion.of("17")
             implementation = JvmImplementation.VENDOR_SPECIFIC
-            vendor = JvmVendorSpec.BELLSOFT
         }
 
         compilerOptions {
