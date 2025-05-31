@@ -15,6 +15,8 @@ plugins {
 
     `maven-publish`
 
+    signing
+
     idea
 }
 
@@ -137,9 +139,18 @@ tasks {
     }
 }
 
+signing {
+    useInMemoryPgpKeys(
+        System.getenv("SIGNING_KEY_ID"),
+        System.getenv("SIGNING_SECRET_KEY"),
+        System.getenv("SIGNING_PASSWORD")
+    )
+    sign(publishing.publications)
+}
+
 publishing {
     publications {
-        create<MavenPublication>("library") {
+        create<MavenPublication>("opensearchClient") {
             from(components["java"])
 
             pom {
@@ -161,15 +172,29 @@ publishing {
                 }
 
                 scm {
-                    url = "https://github.com/chrisime/search.git"
+                    connection.set("scm:git:git://github.com/deinusername/opensearch-client.git")
+                    developerConnection.set("scm:git:ssh://github.com:deinusername/opensearch-client.git")
+                    url.set("https://github.com/deinusername/opensearch-client")
                 }
             }
         }
     }
 
     repositories {
-        maven {
+        maven("central") {
+            name = "central"
+            url = uri("https://central.sonatype.com/api/v1/publisher/upload")
 
+            credentials {
+                username = System.getenv("CENTRAL_PORTAL_USERNAME")
+                password = System.getenv("CENTRAL_PORTAL_PASSWORD")
+            }
         }
     }
+}
+
+tasks.register("publishToCentral") {
+    dependsOn("publishOpensearchClientPublicationToCentralRepository")
+    description = "Publishes to Maven Central via Central Portal"
+    group = "publishing"
 }
